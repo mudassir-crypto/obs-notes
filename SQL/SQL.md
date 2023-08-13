@@ -37,8 +37,8 @@ Table is a collection of rows(tuples) and columns(attributes)
 
 Creating and inserting values into the table:
 
-```sql
-CREATE TABLE User (
+ ```sql
+ CREATE TABLE User (
     id varchar(255) NOT NULL,
     name varchar(255) NOT NULL,
     dob varchar(255) NOT NULL,
@@ -47,30 +47,30 @@ CREATE TABLE User (
     PRIMARY KEY (id)
   );
 
-INSERT INTO User
-VALUES ('u1', 'Tate', '1992-01-19', 'm', 'employee');
+ INSERT INTO User
+ VALUES ('u1', 'Tate', '1992-01-19', 'm', 'employee');
 
-INSERT INTO User
-VALUES ('u2', 'Tina', '1992-02-19', 'f', 'manager');
+ INSERT INTO User
+ VALUES ('u2', 'Tina', '1992-02-19', 'f', 'manager');
 
-INSERT INTO User
-VALUES ('u3', 'John', '1992-01-19', 'm', 'manager');
-
-INSERT INTO User
-VALUES ('u4', 'Jana', '1992-01-19', 'f', 'employee');
-```
+ INSERT INTO User
+ VALUES ('u3', 'John', '1992-01-19', 'm', 'manager');
+ 
+ INSERT INTO User
+ VALUES ('u4', 'Jana', '1992-01-19', 'f', 'employee');
+ ```
 
 renaming columns:
-  ```sql
-  SELECT column as '<new_name>'
-  ```
+ ```sql
+ SELECT column as '<new_name>'
+ ```
 
   
 concatenate two columns:
-  ```sql
-  SELECT CONCAT(emp_no, ' ', title) as emp from titles
-  SELECT CONCAT(emp_no, ' is a ', title) as emp from titles
-  ```
+ ```sql
+ SELECT CONCAT(emp_no, ' ', title) as emp from titles
+ SELECT CONCAT(emp_no, ' is a ', title) as emp from titles
+ ```
   
 
 Scalar functions:
@@ -85,161 +85,145 @@ Aggregate function:
 
 
 SELECT:
-  ```sql
-  SELECT * from salaries WHERE salary=(SELECT max(salary) from salaries);
+ ```sql
+ SELECT * from salaries WHERE salary=(SELECT max(salary) from salaries);
 
-  SELECT * from employees WHERE birth_date=(SELECT min(birth_date) from employees);
+ SELECT * from employees WHERE birth_date=(SELECT min(birth_date) from employees);
 
-  SELECT * from employees WHERE first_name='Mayumi' And last_name='Schueller';
+ SELECT * from employees WHERE first_name='Mayumi' And last_name='Schueller';
 
-  -- SELECT * from employees WHERE (state='OR' OR state='NY') AND gender='F'
+ -- SELECT * from employees WHERE (state='OR' OR state='NY') AND gender='F'
 
-  SELECT * from employees WHERE NOT age=55;
+ SELECT * from employees WHERE NOT age=55;
 
-  SELECT e.emp_no, s.salary from employees as e 
-  inner join salaries as s using(emp_no)
-  order by s.salary desc
-  limit 1 offset 3  --limit(how many rows) offset (from which row to start from)
-
-  ```
+ SELECT e.emp_no, s.salary from employees as e 
+ inner join salaries as s using(emp_no)
+ order by s.salary desc
+ limit 1 offset 3  --limit(how many rows) offset (from which row to start from)
+ ```
   
 
 Logical Operator:
-  AND, OR, NOT
+  `AND, OR, NOT`
 
 Comparison Operator:
-  =, >, <, >=, <=, <> or !=
+ ` =, >, <, >=, <=, <> or !=`
 
 Operator Precedence:
   A statement having multiple operator is evaluated based on the priority of operators
-  Parenthesis -> */% -> +- -> Not And Or
+  `Parenthesis -> */% -> +- -> Not And Or`
 
   If the operator has equal precedence, then the operators evaluated from left to right or right to left
 
-  ```sql
-  SELECT firstname, age, income, country from customers
-  WHERE income>50000 AND (age<30 OR age>50) AND (country='Japan' OR country='Australia')
+ ```sql
+ SELECT firstname, age, income, country from customers
+ WHERE income>50000 AND (age<30 OR age>50) AND (country='Japan' OR country='Australia')
   
-  SELECT * from orders
-  WHERE (orderdate>='2004-04-01' AND orderdate<='2004-04-30') And totalamount>100
-  ```
+ SELECT * from orders
+ WHERE (orderdate>='2004-04-01' AND orderdate<='2004-04-30') And totalamount>100
+ ```
+
 
 NULL:
-
-  Any operation on null value gives null
-  Always check for null when necessary
-  Comparison operator cannot be used to find null values, Instead we use IS operator
-
-   ```sql
-    SELECT * from User WHERE name IS NULL;
-    SELECT * from User WHERE name IS NOT NULL;
-   ```
+  Any operation on null value gives null
+  Always check for null when necessary
+  Comparison operator cannot be used to find null values, Instead we use IS operator
+```sql
+SELECT * from User WHERE name IS NULL;
+SELECT * from User WHERE name IS NOT NULL;
+```
 
 
 replace null values of column with a given value:
-  ```sql
-  SELECT coalesce(name, 'no name available') from User
+ ```sql
+ SELECT coalesce(name, 'no name available') from User
 
-  SELECT id, coalesce(name, 'no name available') as name, age from User;
+ SELECT id, coalesce(name, 'no name available') as name, age from User;
 
-  SELECT id, coalesce(age, 52) as age, name from User;
+ SELECT id, coalesce(age, 52) as age, name from User;
 
-  SELECT id, coalesce(name, email, 'no name or email available') as name, age from User;
+ SELECT id, coalesce(name, email, 'no name or email available') as name, age from User;
+ 
+ SELECT avg(coalesce(age, 15)) from "Student";
 
-  SELECT avg(coalesce(age, 15)) from "Student";
+ SELECT id, coalesce(name, 'default'), coalesce(lastname, 'lastname'),age from "Student";
+ ```
 
-  SELECT id, coalesce(name, 'default'), coalesce(lastname, 'lastname'),age from "Student";
-  ```
+BETWEEN AND:  shorthand to match against the range of values
+ ```sql
+ SELECT * from <table> WHERE <column> BETWEEN x AND y
+ ```
 
-BETWEEN AND:  shorhand to match against the range of values
-
-  SELECT * from <table> WHERE <column> BETWEEN x AND y
-
-  
-
-IN:         It is ike an OR statement, check if a field matches any value
-
-  SELECT * from <table> WHERE <column> IN (val1, val2, ....)
-
-  
+IN: It is like an OR statement, check if a field matches any value
+ ```sql
+ SELECT * from <table> WHERE <column> IN (val1, val2, ....)
+ ```
 
 Casting:
+ ```sql
+ CAST(salary AS text)
+ salary::text
+ ```
 
-  CAST(salary AS text)
-
-  salary::text
-
-  
 
 LIKE:   this operator only works on text so cast it if it is of another type
-
 ILIKE: for case insensitive match
 
-  SELECT * from customers WHERE zip::text LIKE '%2%'
+ ```sql
+ SELECT * from customers WHERE zip::text LIKE '%2%'
 
-  SELECT * from customers WHERE name LIKE 'Gr%'
+ SELECT * from customers WHERE name LIKE 'Gr%'
 
-  SELECT emp_no, first_name, EXTRACT (YEAR FROM AGE(birth_date)) as "age" FROM employees
-
-    WHERE first_name ILIKE 'M%';
+ SELECT emp_no, first_name, EXTRACT (YEAR FROM AGE(birth_date)) as "age" FROM employees
+ WHERE first_name ILIKE 'M%';
+ ```
 
   
 
 Timezones & date:
+ ```sql
+ SHOW TIMEZONE;
 
-  SHOW TIMEZONE;
+ SET TIME ZONE 'UTC'; (it sets the timezone for only tht session)
 
-  
+ ALTER USER postgres SET timezone='UTC';
+ ```
+ 
 
-  SET TIME ZONE 'UTC'; (it sets the timezone for only tht session)
-
-  ALTER USER postgres SET timezone='UTC';
-
-  
-
-  Always use UTC
-
+ Always use UTC:
   postgres uses ISO-8601 standard for the formats of date and time
-
   YYYY-MM-DDTHH:MM:SS
 
   
+Current date:
+ ```sql
+ SELECT now()::date;
 
-  Current date:
+ SELECT CURRENT_DATE;
 
-    SELECT now()::date;
+ SELECT TO_CHAR(CURRENT_DATE, 'dd/mm/yyyy') //defining a format for the current date
 
-    SELECT CURRENT_DATE;
+ SELECT TO_CHAR(CURRENT_DATE, 'dd') 
 
-    SELECT TO_CHAR(CURRENT_DATE, 'dd/mm/yyyy') //defining a format for the current date
+ Difference: Subtracting dates returns the difference in days:
+ SELECT now() - '1800-09-23'
 
-    SELECT TO_CHAR(CURRENT_DATE, 'dd')
-
-  
-
-    Difference: Subtracting dates returns the difference in days
-
-      SELECT now() - '1800-09-23'
-
-    SELECT date '1800/01/01';  => 1800-01-01
-
+ SELECT date '1800/01/01';  => 1800-01-01
+ ```
+ 
 Age calculation:
+ ```sql
+ SELECT AGE('1800-01-01') // wrong, cast it into date
 
-  SELECT AGE('1800-01-01') // wrong, cast it into date
+ SELECT AGE(date '1800-01-01')
 
-  SELECT AGE(date '1800-01-01')
+ SELECT AGE(date '2001-04-14', '1900-01-01') // difference between them
 
-  SELECT AGE(date '2001-04-14', '1900-01-01') // difference between them
+ SELECT emp_no, first_name, EXTRACT (YEAR FROM AGE(birth_date)) as "age" FROM employees
+ WHERE first_name ILIKE 'M%'; // in place of YEAR, we can use DAY, MONTH
 
-  
-
-  SELECT emp_no, first_name, EXTRACT (YEAR FROM AGE(birth_date)) as "age" FROM employees
-
-  WHERE first_name ILIKE 'M%'; // in place of YEAR, we can use DAY, MONTH
-
-  
-
-  SELECT EXTRACT (MONTH from date '1900-01-01') AS month
+ SELECT EXTRACT (MONTH from date '1900-01-01') AS month
+ ```
 
   
 
