@@ -133,7 +133,7 @@ NULL:
    ```sql
     SELECT * from User WHERE name IS NULL;
     SELECT * from User WHERE name IS NOT NULL;
-  ```
+   ```
 
 
 replace null values of column with a given value:
