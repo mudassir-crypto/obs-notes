@@ -138,12 +138,12 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -155,7 +155,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "02962b24e68e1efc",
+  "active": "b92ce1148d3cd3b5",
   "lastOpenFiles": [
     "README.md",
     "email/email.md",

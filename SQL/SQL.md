@@ -29,13 +29,11 @@ DB Types - Hierarchical(like html tags) & Networking, Relational
 Table is a collection of rows(tuples) and columns(attributes)
 
   
-
 >OLTP vs OLAP
 
   Online Transaction Processing   vs    Online Analytical Processing
          Day to day Transaction                    Supports analysis
-
-  
+         
 
 Creating and inserting values into the table:
 
@@ -151,8 +149,7 @@ replace null values of column with a given value:
   SELECT avg(coalesce(age, 15)) from "Student";
 
   SELECT id, coalesce(name, 'default'), coalesce(lastname, 'lastname'),age from "Student";
-  
-```
+  ```
 
 BETWEEN AND:  shorhand to match against the range of values
 
