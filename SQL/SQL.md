@@ -100,8 +100,7 @@ SELECT:
  inner join salaries as s using(emp_no)
  order by s.salary desc
  limit 1 offset 3  --limit(how many rows) offset (from which row to start from)
- ```
-  
+ ``` 
 
 Logical Operator:
   `AND, OR, NOT`
@@ -122,7 +121,6 @@ Operator Precedence:
  SELECT * from orders
  WHERE (orderdate>='2004-04-01' AND orderdate<='2004-04-30') And totalamount>100
  ```
-
 
 NULL:
   Any operation on null value gives null
@@ -165,7 +163,6 @@ Casting:
  salary::text
  ```
 
-
 LIKE:   this operator only works on text so cast it if it is of another type
 ILIKE: for case insensitive match
 
@@ -177,9 +174,7 @@ ILIKE: for case insensitive match
  SELECT emp_no, first_name, EXTRACT (YEAR FROM AGE(birth_date)) as "age" FROM employees
  WHERE first_name ILIKE 'M%';
  ```
-
   
-
 Timezones & date:
  ```sql
  SHOW TIMEZONE;
@@ -194,14 +189,13 @@ Timezones & date:
   postgres uses ISO-8601 standard for the formats of date and time
   YYYY-MM-DDTHH:MM:SS
 
-  
 Current date:
  ```sql
  SELECT now()::date;
 
  SELECT CURRENT_DATE;
 
- SELECT TO_CHAR(CURRENT_DATE, 'dd/mm/yyyy') //defining a format for the current date
+ SELECT TO_CHAR(CURRENT_DATE, 'dd/mm/yyyy') --defining a format for the current date
 
  SELECT TO_CHAR(CURRENT_DATE, 'dd') 
 
@@ -224,199 +218,145 @@ Age calculation:
 
  SELECT EXTRACT (MONTH from date '1900-01-01') AS month
  ```
-
   
+Rounds a date:
+```sql
+ SELECT DATE_TRUNC('year', date '1900-04-26') AS year => 1900-01-01
 
-  Rounds a date:
+ SELECT DATE_TRUNC('month', date '1900-04-26') AS year => 1900-04-01
+ ```
 
-    SELECT DATE_TRUNC('year', date '1900-04-26') AS year => 1900-01-01
+Interval: Stores and manipulate a period of time in years, months, days, hours, minutes, second
+ ```sql
+ INTERVAL '1 year 2 months 3 days'
 
-    SELECT DATE_TRUNC('month', date '1900-04-26') AS year => 1900-04-01
+ INTERVAL '2 weeks ago'
 
-  Interval: Stores and manipulate a period of time in years, months, days, hours, minutes, second
+ INTERVAL '1 year 3 hours 20 minutes'
 
-    INTERVAL '1 year 2 months 3 days'
+ SELECT EXTRACT(YEAR from INTERVAL '24 months');
 
-    INTERVAL '2 weeks ago'
+ select * from orders purchaseDate <= now() - interval '30 days'
+```
 
-    INTERVAL '1 year 3 hours 20 minutes'
 
-  
+Get me all the employees above 60, use the appropriate date functions
+ ```sql
+  SELECT *, age(birth_date) from employees
+  WHERE (EXTRACT (year from age(birth_date))) > 60;
+ ```
 
-    SELECT EXTRACT(YEAR from INTERVAL '24 months');
+How many employees were hired in February:
+ ```sql
+ SELECT * from employees
+ WHERE EXTRACT (MONTH from hire_date) = 2;
+ ```
 
-    select * from orders purchaseDate <= now() - interval '30 days'
+How many employees were born in november: 
+ ```sql
+ SELECT * from employees
+ WHERE EXTRACT (MONTH from birth_date) = 11;
+ ```
 
-  
+Who is the oldest employee? (Use the analytical function MAX)
+ ```sql
+ SELECT MAX(AGE(birth_date)) FROM employees
+ ```
 
-  Get me all the employees above 60, use the appropriate date functions
+How many orders were made in January 2004?
+ ```sql
+ SELECT * from orders
+ WHERE date_trunc('month', orderdate) = date '2004-01-01'
+ ```
 
-    SELECT *, age(birth_date) from employees
-
-    WHERE (
-
-        EXTRACT (year from age(birth_date))
-
-    ) > 60;
-
-  
-
-  How many employees WHERE hired in February:
-
-    SELECT * from employees
-
-    WHERE EXTRACT (MONTH from hire_date) = 2;
-
-  
-
-  How many employees were born in november
-
-    SELECT * from employees
-
-    WHERE EXTRACT (MONTH from birth_date) = 11;
-
-  
-
-  Who is the oldest employee? (Use the analytical function MAX)
-
-    SELECT MAX(AGE(birth_date)) FROM employees
-
-  
-
-  How many orders were made in January 2004?
-
-    SELECT * from orders
-
-    WHERE date_trunc('month', orderdate) = date '2004-01-01'
-
-  
 
 DISTINCT: eliminates duplicate data
+ ```sql
+ SELECT DISTINCT birth_date from employees;
+ ```
 
-  SELECT DISTINCT birth_date from employees;
-
-  
-
-Order BY: sorting the data in ascending or descending order
-
-  select emp_no, first_name, last_name from employees
-
-  order by first_name, last_name desc
-
-  
-
-  select emp_no, first_name, last_name from employees
-
-  order by length(first_name) DESC
-
-  
+Order By: sorting the data in ascending or descending order
+ ```sql
+ SELECT emp_no, first_name, last_name from employees
+ ORDER BY first_name, last_name DESC
+ 
+ SELECT emp_no, first_name, last_name from employees
+ ORDER BY length(first_name) DESC
+```
 
 Multiple SELECT statement:
-
-  SELECT e.first_name, e.last_name, s.salary from employees as e, salaries as s
-
+ ```sql
+  SELECT e.first_name, e.last_name, s.salary from employees as e, salaries as s
   WHERE e.emp_no = s.emp_no;
-
-  
-
+```
+  
 Inner Join: Retrieves the matching rows
-
-  SELECT e.emp_no, CONCAT(e.first_name, ' ' ,e.last_name) as name, s.salary from employees as e
-
+ ```sql
+ SELECT e.emp_no, CONCAT(e.first_name, ' ' ,e.last_name) as name, s.salary from employees as e
   INNER JOIN salaries as s
-
   ON e.emp_no = s.emp_no ORDER BY e.emp_no;
+```
+ 
+3 tables chaining:
+ Give salary when there title changed
+ ```sql
+ SELECT e.emp_no, s.salary, s.from_date, t.title from employees as e
+ INNER join salaries as s on e.emp_no = s.emp_no
+ INNER join titles as t on t.emp_no = e.emp_no
+ and t.from_date = s.from_date + interval '2 days'
+ ORDER BY e.emp_no
+```
 
-  
+USING keyword:
+ ```sql
+ SELECT emp.emp_no, emp.first_name, dep.dept_no from employee as emp
+ INNER JOIN dept as dep USING(emp_no)
 
-  3 tables chaining:
+ SELECT emp.emp_no, emp.first_name, dep.dept_no, d.dept_name from employees as emp
+ INNER JOIN dept_emp as dep using(emp_no)
+ INNER JOIN departments as d using(dept_no)
+ ```
+  
 
-    give salary when there title changed
+When the got hired and when there title changed?
+ ```sql
+ SELECT e.emp_no, s.salary, s.from_date, t.title from employees as e
+ INNER join salaries as s on e.emp_no = s.emp_no
+ INNER join titles as t on t.emp_no = e.emp_no
+ AND (t.from_date = s.from_date OR t.from_date = s.from_date + interval '2 days')
+ ORDER BY e.emp_no
+ ```
 
-    SELECT e.emp_no, s.salary, s.from_date, t.title from employees as e
-
-    INNER join salaries as s on e.emp_no = s.emp_no
-
-    INNER join titles as t on t.emp_no = e.emp_no
-
-    and t.from_date = s.from_date + interval '2 days'
-
-    ORDER BY e.emp_no
-
-  
-
-    when they got hired and when there title changed
-
-    SELECT e.emp_no, s.salary, s.from_date, t.title from employees as e
-
-    INNER join salaries as s on e.emp_no = s.emp_no
-
-    INNER join titles as t on t.emp_no = e.emp_no
-
-    and (t.from_date = s.from_date OR t.from_date = s.from_date + interval '2 days')
-
-    ORDER BY e.emp_no
-
-  
-
-    Always use inner joins for best practices
-
-  
+##### Always use inner joins for best practices
 
 Self Join: It is a type of inner join but within the same table
-
-    When a table has a foreign key referencing to its own primary key
-
+  When a table has a foreign key referencing to its own primary key
+  ```sql
   SELECT a.id, a.name as emp_name, b.name as supervisor_name from
-
   employee as a, employee as b
-
   WHERE a.supervisor_id = b.id
-
-  
+  ```
 
 Outer join: Retrieves those rows also which does not match [LEFT RIGHT FULL]
-
-  SELECT emp.emp_no, dept.emp_no from employees as emp LEFT JOIN dept_manager as dept
-
-  ON emp.emp_no=dept.emp_no
-
-  WHERE dept.emp_no IS NOT NULL;
-
-  
+ ```sql
+ SELECT emp.emp_no, dept.emp_no from employees as emp LEFT JOIN dept_manager as dept
+ ON emp.emp_no=dept.emp_no
+ WHERE dept.emp_no IS NOT NULL;
+ ```
+  
 
 Less common joins:
-
   CROSS JOIN: very less common, it is not used in the industry
+ ```sql
+ SELECT * from tableA CROSS JOIN tableB
 
-    SELECT * from tableA CROSS JOIN tableB
-
-    SELECT * from tableA as a CROSS JOIN tableB as b ON a.id = b.id
-
-  
-
+ SELECT * from tableA as a CROSS JOIN tableB as b ON a.id = b.id
+ ``` 
   FULL JOIN
 
   
 
-using keyword:
-
-  SELECT emp.emp_no, emp.first_name, dep.dept_no from employee as emp
-
-  INNER JOIN dept as dep USING(emp_no)        -- using(emp_no) => emp.emp_no = dep.emp_no
-
-  
-
-  SELECT emp.emp_no, emp.first_name, dep.dept_no, d.dept_name from employees as emp
-
-  INNER JOIN dept_emp as dep using(emp_no)
-
-  INNER JOIN departments as d using(dept_no)
-
-  
-
-Exercise on innerjoin:
-
+Exercise on Inner Join:
   Get all orders from customers who live in Ohio (OH), New York (NY) or Oregon (OR) state:
 
     select cust.firstname, cust.lastname, cust.state, ord.orderid, ord.totalamount  from customers as cust
