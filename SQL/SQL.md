@@ -318,7 +318,7 @@ USING keyword:
  ```
   
 
-When the got hired and when there title changed?
+When they got hired and when there title changed?
  ```sql
  SELECT e.emp_no, s.salary, s.from_date, t.title from employees as e
  INNER join salaries as s on e.emp_no = s.emp_no
@@ -358,84 +358,62 @@ Less common joins:
 
 Exercise on Inner Join:
   Get all orders from customers who live in Ohio (OH), New York (NY) or Oregon (OR) state:
-
-    select cust.firstname, cust.lastname, cust.state, ord.orderid, ord.totalamount  from customers as cust
-
-    INNER JOIN orders as ord on cust.customerid = ord.customerid
-
-    WHERE cust.state IN ('OH', 'NY', 'OR')
-
-    ORDER BY ord.orderid
+  ```sql
+  select cust.firstname, cust.lastname, cust.state, ord.orderid, ord.totalamount  from    customers as cust
+  INNER JOIN orders as ord on cust.customerid = ord.customerid
+  WHERE cust.state IN ('OH', 'NY', 'OR')
+  ORDER BY ord.orderid
+  ```
 
   Show me the inventory for each product:
-
-    select prod.prod_id, prod.price, inv.quan_in_stock from products as prod
-
-    INNER JOIN inventory as inv ON prod.prod_id = inv.prod_id
-
-    ORDER BY prod.prod_id
-
-  
+  ```sql
+  select prod.prod_id, prod.price, inv.quan_in_stock from products as prod
+  INNER JOIN inventory as inv ON prod.prod_id = inv.prod_id
+  ORDER BY prod.prod_id
+  ```
 
   Show me for each employee which department they work in:
+  ```sql
+  select emp.emp_no, dep.dept_no, d.dept_name from employees as emp
+  INNER JOIN dept_emp as dep on dep.emp_no = emp.emp_no
+  INNER JOIN departments as d ON d.dept_no = dep.dept_no
+  order by emp.emp_no
+  ```
 
-    select emp.emp_no, dep.dept_no, d.dept_name from employees as emp
-
-    INNER JOIN dept_emp as dep on dep.emp_no = emp.emp_no
-
-    INNER JOIN departments as d ON d.dept_no = dep.dept_no
-
-    order by emp.emp_no
-
-  
 
 GROUP BY:
-
   It splits data into groups or chunks so we can apply functions against the group rather than the entire table
-
   We use group by almost exclusively with aggregate function
-
   group by is stricter than it looks
-
   It reduces all records found for the matching group to a single record
-
   Group by utilizes split-apply-combine strategy
 
-  
+```sql
+SELECT dept_no, count(emp_no) from dept_emp
+group by dept_no
+```
 
-  SELECT dept_no, count(emp_no) from dept_emp
-
-  group by dept_no
-
-  
 
 Having keyword:
-
   WHERE applies filter to rows
-
   HAVING applies filter to a group
-
-  
-
-  SELECT d.dept_name, count(emp.emp_no) as "emp count" from employees as emp
-
+  ```sql
+  SELECT d.dept_name, count(emp.emp_no) as "emp count" from employees as emp
   INNER JOIN dept_emp as dep on dep.emp_no = emp.emp_no
-
   INNER JOIN departments as d on d.dept_no = dep.dept_no
-
   GROUP BY d.dept_name
+  ```
 
+```sql
+SELECT dep.dept_no, d.dept_name, count(emp.emp_no) as "emp count" from employees as emp
+INNER JOIN dept_emp as dep on dep.emp_no = emp.emp_no
+INNER JOIN departments as d on d.dept_no = dep.dept_no
+GROUP BY d.dept_name, dep.dept_no
+HAVING count(emp.emp_no) > 25000
+```
   
 
-  SELECT dep.dept_no, d.dept_name, count(emp.emp_no) as "emp count" from employees as emp
 
-  INNER JOIN dept_emp as dep on dep.emp_no = emp.emp_no
-
-  INNER JOIN departments as d on d.dept_no = dep.dept_no
-
-  GROUP BY d.dept_name, dep.dept_no
-
-  HAVING count(emp.emp_no) > 25000
 
   
 
