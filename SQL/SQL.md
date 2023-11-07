@@ -17,6 +17,7 @@
 >SQL - A language to interact with a db
 >Query - Instructions
 
+Moving on
 #### SQL is a declarative language:
 
   Declarative                                              Imperative (c++, etc)

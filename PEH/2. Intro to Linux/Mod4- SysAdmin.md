@@ -68,11 +68,11 @@ System utility commands:
 
 Process, jobs, scheduling:
   Application   eg. NFS, rsyslog, firefox
-  Script        eg. adduser, cd, pwd
-  Process       Applications have multiple processes with its process id 
+  Script            eg. adduser, cd, pwd
+  Process         Applications have multiple processes with its process id 
   Daemon        Its a process that runs continuously 
-  Thread        Every process could have multiple threads associated with it 
-  Job           run a service or process at a schedule time
+  Thread          Every process could have multiple threads associated with it 
+  Job                run a service or process at a schedule time
 
   systemctl, ps, top, kill, crontab, at 
 
