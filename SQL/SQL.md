@@ -414,21 +414,15 @@ HAVING count(emp.emp_no) > 25000
 ```
   
 
-
-
-  
-
-  SELECT dep.dept_no, d.dept_name, count(emp.emp_no) as "emp count" from employees as emp
-
-  INNER JOIN dept_emp as dep on dep.emp_no = emp.emp_no
-
-  INNER JOIN departments as d on d.dept_no = dep.dept_no
-
-  WHERE emp.gender = 'F'
-
-  GROUP BY d.dept_name, dep.dept_no
-
-  HAVING count(emp.emp_no) > 25000
+```sql
+SELECT dep.dept_no, d.dept_name, count(emp.emp_no) as "emp count" from employees as emp
+INNER JOIN dept_emp as dep on dep.emp_no = emp.emp_no
+INNER JOIN departments as d on d.dept_no = dep.dept_no
+WHERE emp.gender = 'F'
+GROUP BY d.dept_name, dep.dept_no
+HAVING count(emp.emp_no) > 25000
+```
+ 
 
   
 
