@@ -90,10 +90,10 @@ function real(){  // lets say it is stored in 8k address in heap
   console.log('real 1')
 }
 function real(){  // 12k
-  console.log('real 1')
+  console.log('real 2')
 }
 function real(){  // 16k
-  console.log('real 1')
+  console.log('real 3')
 }
 real()
 ```
@@ -118,7 +118,7 @@ function fn(){
 fn()
 
 fnContainer() 
-let fnContainer = function (){ //this is initialization
+let fnContainer = function (){ //this is initialization - in arrow fn as well
   console.log('fnC')
 }
 fnContainer()
@@ -184,7 +184,6 @@ fn()
 ```
 
 ```js
-console.log(varName)
 var varName = 10
 // 
 function b() {
@@ -497,4 +496,185 @@ function add(b) {
 
 let childAdd = add()
 childAdd()
+```
+
+#### 10. this keyword
+
+* Nodejs non-strict mode
+```js
+console.log(this) // returns empty object
+
+function showThis(){
+  console.log(this) // returns global object
+}
+showThis()
+
+const obj = {
+  name: 'John',
+  func: function (){
+    console.log(this) // return its own object which is obj
+    
+    function insideFunc(){
+      console.log(this) // returns global object
+    }
+    insideFunc()
+  }
+}
+obj.func()
+```
+
+* Nodejs strict mode
+```js
+'use strict'
+
+console.log(this) // returns empty object
+
+function showThis(){
+  console.log(this) // returns undefined
+}
+showThis()
+
+const obj = {
+  name: 'John',
+  func: function (){
+    console.log(this) // return its own object which is obj
+    
+    function insideFunc(){
+      console.log(this) // returns undefined
+    }
+    insideFunc()
+  }
+}
+obj.func()
+```
+
+* Browser non-strict mode
+```js
+console.log(this) // returns window object
+
+function showThis(){
+  console.log(this) // returns window object
+}
+showThis()
+
+const obj = {
+  name: 'John',
+  func: function (){
+    console.log(this) // return its own object which is obj
+    
+    function insideFunc(){
+      console.log(this) // returns window object
+    }
+    insideFunc()
+  }
+}
+obj.func()
+```
+
+* Browser strict mode
+```js
+console.log(this) // returns window object
+
+function showThis(){
+  console.log(this) // returns undefined
+}
+showThis()
+
+const obj = {
+  name: 'John',
+  func: function (){
+    console.log(this) // return its own object which is obj
+    
+    function insideFunc(){
+      console.log(this) // returns undefined
+    }
+    insideFunc()
+  }
+}
+obj.func()
+```
+
+Call, apply and bind:
+
+```js
+let person1 = {
+  name: 'Adam',
+  age: 45,
+  showDetails: function(){
+    console.log(`${this.name} is ${this.age} years old`)
+  }
+}
+
+person1.showDetails()
+
+let person2 = {
+  name: 'Steve',
+  age: 32
+}
+
+// function borrowing
+person1.showDetails.call(person2)
+```
+
+```js
+function showDetails (){
+  console.log(`${this.name} is ${this.age} years old`)
+}
+  
+let person1 = {
+  name: 'Adam',
+  age: 45,
+}
+
+let person2 = {
+  name: 'Steve',
+  age: 32
+}
+
+showDetails.call(person1)
+showDetails.call(person2)
+```
+with parameters:
+```js
+function showDetails (city, car){
+  console.log(`${this.name} is ${this.age} years old\nLives in ${city} and drives ${car}\n`)
+}
+  
+let person1 = {
+  name: 'Adam',
+  age: 45,
+}
+
+let person2 = {
+  name: 'Steve',
+  age: 32
+}
+
+showDetails.call(person1, 'Delhi', 'BMW')
+showDetails.call(person2, 'Mumbai', 'Mercedes')
+
+showDetails.apply(person1, ['Delhi', 'BMW'])
+showDetails.apply(person2, ['Mumbai', 'Mercedes'])
+
+const showDetailsBind = showDetails.bind(person1, 'Delhi', 'BMW') // returns a function which bounds the showDetails function
+showDetailsBind()
+```
+
+Function Currying: It is a functional programming technique where a function with multiple arguments is transformed into a series of functions, each taking a single argument.
+```js
+function add(a, b){
+  console.log(a + b)
+}
+
+const add2 = add.bind(this, 4) // this refers to add function
+add2(4)
+
+function add(x){
+  return function(y){
+    console.log(x + y)
+  }
+}
+
+const addWith2 = add(2)
+addWith2(4)
 ```
