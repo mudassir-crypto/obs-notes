@@ -36,6 +36,8 @@ Table is a collection of rows(tuples) and columns(attributes)
          Day to day Transaction                    Supports analysis
          
 
+![[Table.jpg]]
+
 Creating and inserting values into the table:
 
  ```sql
@@ -72,30 +74,34 @@ concatenate two columns:
  SELECT CONCAT(emp_no, ' ', title) as emp from titles
  SELECT CONCAT(emp_no, ' is a ', title) as emp from titles
  ```
-  
+
+```sql
+SELECT emp_name AS 'Employee name' from "employees"
+
+" is for tables
+' is for text
+
+Always use single quote
+```
 
 Scalar functions:
-  Takes input of a single row
+ >Takes input of a single row
 
 Aggregate function:
-  Aggregate functions compute a single result from a set of input values (Takes input of all the rows)
-
+ >Aggregate functions compute a single result from a set of input values (Takes input of all the rows)
+ >
  >min, max, avg, sum, count
   
   Aggregate functions are not allowed in where clause
 
 
-SELECT:
+#### SELECT:
  ```sql
  SELECT * from salaries WHERE salary=(SELECT max(salary) from salaries);
 
  SELECT * from employees WHERE birth_date=(SELECT min(birth_date) from employees);
 
- SELECT * from employees WHERE first_name='Mayumi' And last_name='Schueller';
 
- -- SELECT * from employees WHERE (state='OR' OR state='NY') AND gender='F'
-
- SELECT * from employees WHERE NOT age=55;
 
  SELECT e.emp_no, s.salary from employees as e 
  inner join salaries as s using(emp_no)
@@ -105,9 +111,20 @@ SELECT:
 
 Logical Operator:
   `AND, OR, NOT`
+```sql
+ SELECT * from employees WHERE first_name='Mayumi' And last_name='Schueller';
+
+ SELECT * from employees WHERE (state='OR' OR state='NY') AND gender='F'
+
+ SELECT * from employees WHERE NOT age=55;
+```
 
 Comparison Operator:
- ` =, >, <, >=, <=, <> or !=`
+ ` =, >, <, >=, <=, !>, !<, <> or != `
+ ![[comparison_operator.jpg]]
+```sql
+
+```
 
 Operator Precedence:
   A statement having multiple operator is evaluated based on the priority of operators
