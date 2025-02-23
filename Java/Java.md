@@ -184,29 +184,251 @@ Keywords for EH - `try, catch, finally, throw, throws`
 ![[Java_7.jpg]]
 
 ```java
+class AgeInvalidException extends Exception {
+  AgeInvalidException(){
+    super("Invalid age");
+  }
+
+  AgeInvalidException(String message){
+    super(message);
+  }
+
+}
+
+
 public class App {
   public static void main(String[] args) {
     System.out.println("\nStarting");
     try {
       int n1 = Integer.parseInt(args[0]);
       int n2 = Integer.parseInt(args[1]);
+      if(n1 < 10 || n2 < 10){
+        throw new AgeInvalidException("invalid age message param");
+      }
+
       int div = n1 / n2;
-      System.out.println("Division result is " + div);
+      System.out.println("Division result is " + div); 
     } catch (ArithmeticException e) {
       System.out.println("n2 cant be zero");
       System.out.println(e.getMessage());
+
     } catch (NumberFormatException e) {
       System.out.println("Invalid number");
       System.out.println(e.getMessage());
+
     } catch (Exception e) {
       // catching parent exception for all the other exception tht could occur
       System.out.println("Error!!");
       System.out.println(e.getMessage());
+
     } finally {
       // always gets executed
       System.out.println("Cleaning up");
+
     }
     System.out.println("Terminated....");
+  }
+}
+```
+
+
+#### Collection Framework
+Collection - Any group of individual object in a single unit
+![[Java_8.jpg]]
+
+![[Java_9.jpg]]
+![[Java_10.jpg]]
+
+
+On creating collection:
+1. Type Safe - same type of element (objects) are added to collection
+2. Un Type Safe - different types of element can be added to collection
+
+#### List
+```java
+import java.util.*;
+
+public class App {
+    public static void main(String[] args) throws Exception {
+        ArrayList<String> names = new ArrayList<String>(); // Type Safe
+        names.add("John");
+        names.add("Jana");
+        System.out.println(names);
+        System.out.println(names.get(1));
+
+        LinkedList list = new LinkedList(); // Un-Type Safe
+        list.add("sachin");
+        list.add(101);
+        list.add(false);
+        System.out.println(list);
+    }
+}
+```
+
+ArrayList: 
+```java
+ArrayList<String> cars = new ArrayList<String>();
+cars.add("Volvo");
+cars.add("BMW");
+cars.add("Ford");
+cars.add(0, "Mazda"); // Insert element by index, all the other element will shift accordingly
+cars.set(0, "Mazda2"); // change an item
+
+cars.remove("BMW"); // remove an item
+cars.clear(); // removes all the element
+System.out.println(cars.size());
+System.out.println(cars.contains("Ford"));
+System.out.println(cars);
+
+Vector<String> vector = new Vector<>(); // all same methods as List but have some additional features
+vector.addAll(cars);
+System.out.println(cars);
+```
+
+HashSet:
+```java
+// All same methods of List except methods involving index
+// no indexing, orders are not preserved
+HashSet<Double> nms = new HashSet<Double>();
+nms.add(14.14);
+nms.add(2.12);
+nms.add(134.134554); // Autoboxing - new Double(num)
+System.out.println(nms);
+```
+
+TreeSet:
+```java
+TreeSet<Double> tset = new TreeSet<Double>(); // will be in sorted form
+tset.addAll(nms);
+System.out.println(tset);
+```
+
+##### 5 ways of traversing
+
+1. for-each loop - part of Iterable
+```java
+for(String str: cars){
+  System.out.print(str + "\t" + str.length() + "\t");
+  StringBuffer sb = new StringBuffer(str);
+  System.out.println(sb.reverse());
+}
+```
+
+2. Iterator - part of collection
+```java
+// only forward traversal
+Iterator<String> itr = cars.iterator();
+while (itr.hasNext()) {
+  System.out.println(itr.next());
+}
+```
+
+3. ListIterator - part of List
+```java
+// using ListIterator - forward and backward traversal
+ListIterator<String> lItr = cars.listIterator(cars.size()); // need to set cursor to the last element
+while(lItr.hasPrevious()){ //has Next for forward
+  System.out.println(lItr.previous());
+}
+```
+
+4. Enumeration
+```java
+Enumeration<String> enuml = Collections.enumeration(cars);
+while(enuml.hasMoreElements()){
+  System.out.println(enuml.nextElement());
+}
+```
+
+5. ForEach method
+```java
+cars.forEach(car -> {
+  System.out.print(car + "\t");
+});
+```
+
+Sorting of elements:
+```java
+TreeSet<String> tset2 = new TreeSet<String>();
+tset2.addAll(cars);
+tset2.forEach(car -> {
+  System.out.println(car);
+});
+
+// Comparable and Comparator - need to study
+```
+
+#### Map
+
+HashMap:
+```java
+HashMap<String, Integer> courses = new HashMap<>();
+courses.put("TypeScript", 8755);
+courses.put("Java", 4700);
+courses.put("JS", 8000);
+courses.put("Spring", 9000);
+courses.put("SpringBoot", 4700);
+
+courses.forEach((k, v) -> {
+  System.out.println(k + " => " + v);
+});
+```
+
+TreeMap:
+```java
+TreeMap<String, Integer> tmap = new TreeMap<>(); // sorts the keys
+tmap.putAll(courses);
+tmap.forEach((k, v) -> {
+  System.out.println(k + " => " + v);
+});
+```
+
+traverse:
+```java
+// forEach method
+// keyset
+for(String i: courses.keySet()){
+  System.out.println(i + " => " + courses.get(i));
+}
+```
+
+
+#### Generics
+Java Generics allows us to create a single class, interface, and method that can be used with different types of data (objects).
+A generic type is a class or interface that is parameterized over types
+
+```java
+public class Generics<T> {
+  T container;
+
+  public Generics(T container){
+    this.container = container;
+  }
+
+  public T getContainer(){
+    return this.container;
+  }
+
+public void performTask(){
+    if(container instanceof String){
+      System.out.println("Length of " + this.container + "is " + ((String)this.container).length());
+    } else if(container instanceof Integer){
+      System.out.println(this.container + " is an integer");
+    }
+  }
+
+  public static void main(String[] args) {
+    System.out.println("");
+    Generics<Integer> genObj = new Generics(556);
+    Generics<String> genObj2 = new Generics("String---");
+    Generics genObj3 = new Generics(7895.4564);
+
+    System.out.println(genObj.getContainer() + " " + genObj.getContainer().getClass().getName());
+
+    System.out.println(genObj2.getContainer());
+    System.out.println(genObj3.getContainer());
+    genObj.performTask();
+    genObj2.performTask();
   }
 
 }
