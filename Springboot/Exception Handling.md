@@ -32,7 +32,7 @@ public class TodoAPIException extends RuntimeException{
 }
 ```
 
-
+##### GlobalExceptionHandler
 ```java
 
 @ControllerAdvice
