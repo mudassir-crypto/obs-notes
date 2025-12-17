@@ -51,7 +51,7 @@ Constructor Overloading:
 
 Method Overloading:
 * defining multiple functions within a class with same name
-* Atleast one must be present while constructor overloading
+* Atleast one must be present while method overloading
    1. Number of arguments may differ
    2. Type of arguments may differ
    3. Order of arguments may differ
@@ -126,6 +126,15 @@ class B extends A{  //Inherits parent class methods
 
 ```
 
+```java
+class A { }          // Superclass
+class B extends A { } // Single Inheritance
+class C extends B { } // Multilevel Inheritance
+class D extends A { } // Hierarchical Inheritance
+interface X { }
+interface Y { }
+class Z implements X, Y { } // Multiple Inheritance through Interfaces
+```
 ##### Polymorphism
 Differentiate between entities with the same name efficiently
 1. Method Overloading: Also, known as compile-time polymorphism, is the concept where more than one method share the same name with different Parameters in a class. The return type of these methods can or cannot be same.
@@ -327,7 +336,7 @@ while (itr.hasNext()) {
 ```java
 // using ListIterator - forward and backward traversal
 ListIterator<String> lItr = cars.listIterator(cars.size()); // need to set cursor to the last element
-while(lItr.hasPrevious()){ //has Next for forward
+while(lItr.hasPrevious()){ //has Next for forward0
   System.out.println(lItr.previous());
 }
 ```
