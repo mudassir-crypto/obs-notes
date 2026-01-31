@@ -210,3 +210,127 @@ public class SimpleComponentServlet extends SlingAllMethodsServlet {
 	}
 }
 ```
+
+###### QueryBuilder
+
+Query Builder is a server-side framework and API used to create and execute search queries against the JCR 
+
+![[44.png]]
+
+Basic Query:
+```python
+type=cq:Page
+path=/content/practice/us/en
+p.limit=-1
+property=jcr:content/cq:template
+property.value=/conf/practice/settings/wcm/templates/page-tuts
+```
+
+QueryBuilder API:
+```java
+QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
+Query query = queryBuilder.createQuery(PredicateGroup.create(map), session);
+SearchResult searchResult = query.getResult();
+List<Hit> hits = searchResult.getHits();
+```
+
+QueryBuilder Servlet:
+```java
+@Component(service = { Servlet.class })
+@SlingServletResourceTypes(resourceTypes = "practice/components/page", selectors = "query-builder", methods = HttpConstants.METHOD_POST)
+@ServiceDescription("Simple Demo Servlet")
+public class QueryBuilderServlet extends SlingAllMethodsServlet {
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doPost(final SlingHttpServletRequest req, final SlingHttpServletResponse resp)
+			throws ServletException, IOException {
+		final Resource resource = req.getResource();
+		ResourceResolver resolver = req.getResourceResolver();
+		Session session = resolver.adaptTo(Session.class);
+		try {
+			JsonArray resultArray = new JsonArray();
+			Map<String, String> map = new HashMap<>();
+			map.put("type", "cq:Page");
+			map.put("path", "/content/practice/us/en");
+			map.put("p.limit", "-1");
+			map.put("property", "jcr:content/cq:template");
+			map.put("property.value", "/conf/practice/settings/wcm/templates/tutorial-template");
+			QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
+			Query query = queryBuilder.createQuery(PredicateGroup.create(map), session);
+			SearchResult searchResult = query.getResult();
+			List<Hit> hits = searchResult.getHits();
+			for (Hit hit : hits) {
+				JsonObject pageObj = new JsonObject();
+				pageObj.addProperty("path", hit.getPath());
+				resultArray.add(pageObj);
+			}
+			resp.setContentType("application/json");
+			resp.getWriter().write(resultArray.toString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.logout();
+			}
+		}
+	}
+}
+```
+
+Exercise to retrieve which page contains our component:
+```java
+JsonArray resultArray = new JsonArray();
+Map<String, String> map = new HashMap<>();
+map.put("type", "nt:unstructured");
+map.put("path", "/content/practice/us/en");
+map.put("p.limit", "-1");
+map.put("property", "sling:resourceType");
+map.put("property.value", "practice/components/servletcomponent");
+QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
+Query query = queryBuilder.createQuery(PredicateGroup.create(map), session);
+SearchResult searchResult = query.getResult();
+List<Hit> hits = searchResult.getHits();
+	for (Hit hit : hits) {
+		String hitPath = hit.getPath();
+		String pagePath = hitPath.split("/jcr:content")[0];
+		JsonObject pageObj = new JsonObject();
+		pageObj.addProperty("path", pagePath);
+		resultArray.add(pageObj);
+
+	}
+resp.setContentType("application/json");
+resp.getWriter().write(resultArray.toString());
+```
+
+##### Indexing in AEM
+Indexing is used to increase the performance of the query and reduce the overhead on AEM i.e it improves the speed of data retrieval operations.
+
+###### Types of Indexing - 
+
+**Synchronous Indexing**
+![[45.png]]
+
+**Asynchronous Indexing**
+![[46.png]]
+
+
+![[47.png]]
+
+Custom Index:
+
+Create an index in /oak:index/slingResourceTypeIndex
+![[48.png]]
+
+after this, then refresh and check if indexRules is created. if not then restart agn
+rename nt:base => nt:structured
+rename prop0 => sling:resourceType
+  isRegExp: true
+  propertyIndex:true
+  ordered:false
+On slingResourceTypeIndex, reindex:true
