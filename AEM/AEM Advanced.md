@@ -327,10 +327,94 @@ Custom Index:
 Create an index in /oak:index/slingResourceTypeIndex
 ![[48.png]]
 
-after this, then refresh and check if indexRules is created. if not then restart agn
+after this, then refresh and check if indexRules is created. if not then restart instance agn
 rename nt:base => nt:structured
 rename prop0 => sling:resourceType
   isRegExp: true
   propertyIndex:true
   ordered:false
 On slingResourceTypeIndex, reindex:true
+
+QueryPerformance link - http://localhost:4502/libs/granite/operations/content/diagnosistools/queryPerformance.html
+
+Go to queryperformance -> explain query -> enter query in querybuilder dropdown
+It will use our custom index which is created in this step
+
+* When deleting an index, make sure its deleted from crx and then in crx-quickstart -> repository -> index -> slingResourceTypeIndex
+
+##### Content Fragment
+A Content Fragment is a structured, reusable content entity in AEM that stores pure content without any presentation or layout. It is defined using a Content Fragment Model and can be delivered across multiple channels, including web and mobile applications, typically via APIs such as GraphQL.
+
+A Content Fragment Model (CFM) defines the structure and allowed fields of a Content Fragment in AEM.
+eg. For example, a Product Content Fragment Model may define fields like name, description, price, and image, which authors then fill while creating content fragments.
+
+CFM is stored in /conf/practice/settings/dam/cfm/models
+
+###### Exporting Content Fragment as json
+* Can be accessed using content url of the page component then adding model.json at the end
+* If directly accessing CF through dam then 
+	replace /content/dam/practice/content-fragment/dani-carvajal => /api/assets/practice/content-fragment/dani-carvajal.json
+
+For n football players - we are making a servlet
+![[50.png]]
+
+```java
+@Component(service = { Servlet.class })
+@SlingServletResourceTypes(resourceTypes = "practice/components/page", selectors = "football-players", methods = HttpConstants.METHOD_POST,extensions="json")
+@ServiceDescription("Simple Demo Servlet")
+public class FootballPlayersServlet extends SlingAllMethodsServlet {
+
+	private static final long serialVersionUID = 1L;
+	private static final Gson GSON = new Gson();
+
+	@Override
+	protected void doPost(final SlingHttpServletRequest req, final SlingHttpServletResponse resp)
+			throws ServletException, IOException {
+		//final Resource resource = req.getResource();
+		ResourceResolver resolver = req.getResourceResolver();
+		Session session = resolver.adaptTo(Session.class);
+		try {
+			JsonArray resultArray = new JsonArray();
+			Map<String, String> map = new HashMap<>();
+			map.put("type", "dam:Asset");
+			map.put("path", "/content/dam/practice/content-fragments");
+			map.put("p.limit", "-1");
+			map.put("property", "jcr:content/data/cq:model");
+			map.put("property.value", "/conf/practice/settings/dam/cfm/models/player-database");
+			QueryBuilder queryBuilder = resolver.adaptTo(QueryBuilder.class);
+			Query query = queryBuilder.createQuery(PredicateGroup.create(map), session);
+			SearchResult searchResult = query.getResult();
+			List<Hit> hits = searchResult.getHits();
+			for (Hit hit : hits) {
+				Resource resource = hit.getResource();
+				Resource playerData = resource.getChild("jcr:content/data/master");
+				JsonObject playerDataJson = new JsonObject();
+				playerDataJson.addProperty("title", resource.getName());
+				if(playerData != null ) {
+					JsonObject dataJson = new JsonObject();
+                 playerData.getValueMap().forEach((key,value) -> {
+                	 if (!(key.contains("@LastModified") || key.contains("@ContentType"))){
+                	 JsonElement jsonElement = GSON.toJsonTree(value);
+                	 dataJson.add(key, jsonElement);
+                 }
+                 });
+                 playerDataJson.add("data", dataJson);
+			}
+				resultArray.add(playerDataJson);
+			}
+			resp.setContentType("application/json");
+			resp.getWriter().write(resultArray.toString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.logout();
+			}
+		}
+	}
+}
+```
